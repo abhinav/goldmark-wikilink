@@ -1,4 +1,5 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/abhinav/goldmark-wikilink.svg)](https://pkg.go.dev/github.com/abhinav/goldmark-wikilink)
+[![codecov](https://codecov.io/gh/abhinav/goldmark-wikilink/branch/main/graph/badge.svg?token=W98KYF8SPE)](https://codecov.io/gh/abhinav/goldmark-wikilink)
 
 goldmark-wikilink is an extension for the [goldmark] Markdown parser that
 supports parsing `[[...]]`-style wiki links.
