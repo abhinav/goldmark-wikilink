@@ -26,8 +26,15 @@ var _html = []byte(".html")
 type defaultResolver struct{}
 
 func (defaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
-	dest := make([]byte, len(n.Target)+len(_html))
-	copy(dest, n.Target)
-	copy(dest[len(n.Target):], _html)
-	return dest, nil
+	dest := make([]byte, len(n.Target)+len(_html)+len(_hash)+len(n.Fragment))
+	var i int
+	if len(n.Target) > 0 {
+		i += copy(dest, n.Target)
+		i += copy(dest[i:], _html)
+	}
+	if len(n.Fragment) > 0 {
+		i += copy(dest[i:], _hash)
+		i += copy(dest[i:], n.Fragment)
+	}
+	return dest[:i], nil
 }

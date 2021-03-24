@@ -68,3 +68,27 @@ Does not mess up [regular links](dest.html).
 //- - - - - - - - -//
 <p>Does not mess up <a href="dest.html">regular links</a>.</p>
 //= = = = = = = = = = = = = = = = = = = = = = = =//
+12
+//- - - - - - - - -//
+Supports [[Fragments#In Links]].
+//- - - - - - - - -//
+<p>Supports <a href="Fragments.html#In%20Links">Fragments#In Links</a>.</p>
+//= = = = = = = = = = = = = = = = = = = = = = = =//
+13
+//- - - - - - - - -//
+Links [[with fragments#can have|labels]].
+//- - - - - - - - -//
+<p>Links <a href="with%20fragments.html#can%20have">labels</a>.</p>
+//= = = = = = = = = = = = = = = = = = = = = = = =//
+14
+//- - - - - - - - -//
+[[#Relative]] links.
+//- - - - - - - - -//
+<p><a href="#Relative">#Relative</a> links.</p>
+//= = = = = = = = = = = = = = = = = = = = = = = =//
+15
+//- - - - - - - - -//
+Relative [[#Links|with labels]].
+//- - - - - - - - -//
+<p>Relative <a href="#Links">with labels</a>.</p>
+//= = = = = = = = = = = = = = = = = = = = = = = =//

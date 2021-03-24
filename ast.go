@@ -25,7 +25,16 @@ type Node struct {
 	ast.BaseInline
 
 	// Page to which this wikilink points.
+	//
+	// This may be blank for links to headers within the same document
+	// like [[#Foo]].
 	Target []byte
+
+	// Fragment portion of the link, if any.
+	//
+	// For links in the form, [[Foo bar#Baz qux]], this is the portion
+	// after the "#".
+	Fragment []byte
 }
 
 var _ ast.Node = (*Node)(nil)
