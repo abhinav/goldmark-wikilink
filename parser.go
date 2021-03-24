@@ -26,6 +26,7 @@ var _ parser.InlineParser = (*Parser)(nil)
 var (
 	_open  = []byte("[[")
 	_pipe  = []byte{'|'}
+	_hash  = []byte{'#'}
 	_close = []byte("]]")
 )
 
@@ -68,6 +69,12 @@ func (p *Parser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.Node
 
 	if len(n.Target) == 0 || seg.Len() == 0 {
 		return nil // target and label must not be empty
+	}
+
+	// Target may be Foo#Bar, so break them apart.
+	if idx := bytes.LastIndex(n.Target, _hash); idx >= 0 {
+		n.Fragment = n.Target[idx+1:] // Foo#Bar => Bar
+		n.Target = n.Target[:idx]     // Foo#Bar => Foo
 	}
 
 	n.AppendChild(n, ast.NewTextSegment(seg))

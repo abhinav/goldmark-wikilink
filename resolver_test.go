@@ -1,6 +1,7 @@
 package wikilink
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,21 +18,47 @@ func TestDefaultResolver(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		give string
-		want string
+		target   string
+		fragment string
+		want     string
 	}{
-		{"foo", "foo.html"},
-		{"foo bar", "foo bar.html"},
-		{"foo/bar", "foo/bar.html"},
+		{
+			target: "foo",
+			want:   "foo.html",
+		},
+		{
+			target: "foo bar",
+			want:   "foo bar.html",
+		},
+		{
+			target: "foo/bar",
+			want:   "foo/bar.html",
+		},
+		{
+			target:   "foo",
+			fragment: "bar",
+			want:     "foo.html#bar",
+		},
+		{
+			target:   "foo/bar",
+			fragment: "baz",
+			want:     "foo/bar.html#baz",
+		},
+		{
+			fragment: "foo",
+			want:     "#foo",
+		},
 	}
 
 	for _, tt := range tests {
 		tt := tt
-		t.Run(tt.give, func(t *testing.T) {
+		name := fmt.Sprintf("%v#%v", tt.target, tt.fragment)
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			got, err := DefaultResolver.ResolveWikilink(&Node{
-				Target: []byte(tt.give),
+				Target:   []byte(tt.target),
+				Fragment: []byte(tt.fragment),
 			})
 			require.NoError(t, err, "resolve failed")
 			assert.Equal(t, tt.want, string(got), "result mismatch")
