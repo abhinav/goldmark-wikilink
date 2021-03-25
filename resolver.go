@@ -18,6 +18,10 @@ type Resolver interface {
 	//
 	// If ResolveWikilink returns a non-nil error, rendering will be
 	// halted.
+	//
+	// If ResolveWikilink returns a nil destination and error, the
+	// Renderer will omit the link and render its contents as a regular
+	// string.
 	ResolveWikilink(*Node) (destination []byte, err error)
 }
 

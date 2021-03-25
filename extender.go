@@ -31,7 +31,7 @@ func (e *Extender) Extend(md goldmark.Markdown) {
 	md.Renderer().AddOptions(
 		renderer.WithNodeRenderers(
 			util.Prioritized(&Renderer{
-				e.Resolver,
+				Resolver: e.Resolver,
 			}, 199),
 		),
 	)

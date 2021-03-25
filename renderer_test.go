@@ -63,6 +63,28 @@ func TestRenderer(t *testing.T) {
 		assert.Equal(t, `<a href="bar.html">`, buff.String(),
 			"output mismatch")
 	})
+
+	t.Run("no link", func(t *testing.T) {
+		t.Parallel()
+		var (
+			buff bytes.Buffer
+			w    = bufio.NewWriter(&buff)
+		)
+
+		n := &Node{Target: []byte("foo")}
+		r := Renderer{
+			Resolver: resolverFunc(noopResolver),
+		}
+
+		_, err := r.Render(w, nil /* source */, n, true /* entering */)
+		require.NoError(t, err, "should not fail")
+
+		_, err = r.Render(w, nil /* source */, n, false /* entering */)
+		require.NoError(t, err, "should not fail")
+
+		require.NoError(t, w.Flush(), "flush")
+		assert.Empty(t, buff.String(), "output should be empty")
+	})
 }
 
 func TestRenderer_IncorrectNode(t *testing.T) {
@@ -90,4 +112,8 @@ func TestRenderer_ResolveError(t *testing.T) {
 	)
 	require.Error(t, err, "render with incorrect node must fail")
 	assert.Contains(t, err.Error(), "great sadness")
+}
+
+func noopResolver(*Node) ([]byte, error) {
+	return nil, nil
 }
