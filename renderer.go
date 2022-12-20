@@ -14,8 +14,8 @@ import (
 // Install it on your goldmark Markdown object with Extender, or directly on a
 // goldmark Renderer by using the WithNodeRenderers option.
 //
-//   wikilinkRenderer := util.Prioritized(&wikilink.Renderer{...}, 199)
-//   goldmarkRenderer.AddOptions(renderer.WithNodeRenderers(wikilinkRenderer))
+//	wikilinkRenderer := util.Prioritized(&wikilink.Renderer{...}, 199)
+//	goldmarkRenderer.AddOptions(renderer.WithNodeRenderers(wikilinkRenderer))
 type Renderer struct {
 	// Resolver determines destinations for wikilink pages.
 	//

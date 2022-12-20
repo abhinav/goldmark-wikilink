@@ -13,8 +13,8 @@ import (
 // Install it on your goldmark Markdown object with Extender, or install it
 // directly on your goldmark Parser by using the WithInlineParsers option.
 //
-//   wikilinkParser := util.Prioritized(&wikilink.Parser{...}, 199)
-//   goldmarkParser.AddOptions(parser.WithInlineParsers(wikilinkParser))
+//	wikilinkParser := util.Prioritized(&wikilink.Parser{...}, 199)
+//	goldmarkParser.AddOptions(parser.WithInlineParsers(wikilinkParser))
 //
 // Note that the priority for the wikilink parser must 199 or lower to take
 // precednce over the plain Markdown link parser which has a priority of 200.
@@ -37,7 +37,7 @@ func (p *Parser) Trigger() []byte {
 
 // Parse parses a wikilink. It supports links in the following form.
 //
-//   [[My page]]
+//	[[My page]]
 //
 // This will use "My page" as both, the target for the link as well as the
 // plain text label for it.
@@ -45,7 +45,7 @@ func (p *Parser) Trigger() []byte {
 // Optionally, links can specify a different label by adding a "|" after the
 // target.
 //
-//   [[My page|click here]]
+//	[[My page|click here]]
 //
 // This will treat "My page" as the target and "click here" as the label for
 // the link.

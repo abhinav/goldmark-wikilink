@@ -15,12 +15,12 @@ var Kind = ast.NewNodeKind("WikiLink")
 //
 // For links in the following form, the label and the target are the same.
 //
-//   [[Foo bar]]
+//	[[Foo bar]]
 //
 // For links in the following form, the target is the portion of the link to
 // the left of the "|", and the label is the portion to the right.
 //
-//   [[Foo bar|baz qux]]
+//	[[Foo bar|baz qux]]
 type Node struct {
 	ast.BaseInline
 
