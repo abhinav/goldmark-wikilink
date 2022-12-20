@@ -5,9 +5,9 @@ package wikilink
 //
 // For example,
 //
-//  [[Foo]]      // => "Foo.html"
-//  [[Foo bar]]  // => "Foo bar.html"
-//  [[foo/Bar]]  // => "foo/Bar.html"
+//	[[Foo]]      // => "Foo.html"
+//	[[Foo bar]]  // => "Foo bar.html"
+//	[[foo/Bar]]  // => "foo/Bar.html"
 var DefaultResolver Resolver = defaultResolver{}
 
 // Resolver resolves pages referenced by wikilinks to their destinations.

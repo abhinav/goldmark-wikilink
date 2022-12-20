@@ -1,7 +1,6 @@
 package wikilink
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -18,7 +17,7 @@ func TestNodeDump(t *testing.T) {
 
 	// Node.Dump writes to stdout and provides now ay of overriding that
 	// so we'll have to temporarily hijack os.Stdout.
-	out, err := ioutil.TempFile(t.TempDir(), "stdout")
+	out, err := os.CreateTemp(t.TempDir(), "stdout")
 	require.NoError(t, err, "create temporary file")
 	defer func(out *os.File) { os.Stdout = out }(os.Stdout)
 	os.Stdout = out
@@ -27,7 +26,7 @@ func TestNodeDump(t *testing.T) {
 
 	require.NoError(t, out.Close(), "close stdout")
 
-	got, err := ioutil.ReadFile(out.Name())
+	got, err := os.ReadFile(out.Name())
 	require.NoError(t, err, "read stdout from %q", out.Name())
 
 	want := strings.Join([]string{

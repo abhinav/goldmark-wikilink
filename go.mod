@@ -1,4 +1,4 @@
-module github.com/abhinav/goldmark-wikilink
+module go.abhg.dev/goldmark/wikilink
 
 go 1.16
 

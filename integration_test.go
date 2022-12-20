@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"testing"
 
-	wikilink "github.com/abhinav/goldmark-wikilink"
 	"github.com/yuin/goldmark"
 	goldtestutil "github.com/yuin/goldmark/testutil"
+	"go.abhg.dev/goldmark/wikilink"
 )
 
 func TestIntegration(t *testing.T) {

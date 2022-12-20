@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -91,7 +91,7 @@ func TestRenderer_IncorrectNode(t *testing.T) {
 	t.Parallel()
 
 	var r Renderer
-	_, err := r.Render(bufio.NewWriter(ioutil.Discard), nil /* src */, ast.NewText(), true /* enter */)
+	_, err := r.Render(bufio.NewWriter(io.Discard), nil /* src */, ast.NewText(), true /* enter */)
 	require.Error(t, err, "render with incorrect node must fail")
 	assert.Contains(t, err.Error(), "unexpected node")
 }
@@ -105,7 +105,7 @@ func TestRenderer_ResolveError(t *testing.T) {
 		}),
 	}
 	_, err := r.Render(
-		bufio.NewWriter(ioutil.Discard),
+		bufio.NewWriter(io.Discard),
 		nil, // source
 		&Node{Target: []byte("foo")},
 		true, // entering

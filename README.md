@@ -1,4 +1,4 @@
-[![Go Reference](https://pkg.go.dev/badge/github.com/abhinav/goldmark-wikilink.svg)](https://pkg.go.dev/github.com/abhinav/goldmark-wikilink)
+[![Go Reference](https://pkg.go.dev/badge/go.abhg.dev/goldmark/wikilink.svg)](https://pkg.go.dev/go.abhg.dev/goldmark/wikilink)
 [![Go](https://github.com/abhinav/goldmark-wikilink/actions/workflows/go.yml/badge.svg)](https://github.com/abhinav/goldmark-wikilink/actions/workflows/go.yml)
 [![codecov](https://codecov.io/gh/abhinav/goldmark-wikilink/branch/main/graph/badge.svg?token=W98KYF8SPE)](https://codecov.io/gh/abhinav/goldmark-wikilink)
 
@@ -12,7 +12,7 @@ supports parsing `[[...]]`-style wiki links.
 To use goldmark-wikilink, import the `wikilink` package.
 
 ```go
-import wikilink "github.com/abhinav/goldmark-wikilink"
+import "go.abhg.dev/goldmark/wikilink"
 ```
 
 Then include the `wiklink.Extender` in the list of extensions you build your
