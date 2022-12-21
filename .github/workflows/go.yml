@@ -25,12 +25,7 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go }}
-
-    - name: Load cached dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        cache: true
 
     - name: Download dependencies
       run: go mod download
