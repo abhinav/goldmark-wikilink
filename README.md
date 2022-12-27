@@ -22,7 +22,9 @@ Then include the `wiklink.Extender` in the list of extensions you build your
 
 ```go
 goldmark.New(
-  &wiklink.Extender{}
+  goldmark.WithExtensions(
+    &wiklink.Extender{},
+  ),
   // ...
 )
 ```
@@ -33,9 +35,12 @@ it.
 
 ```go
 goldmark.New(
-  &wiklink.Extender{
-    Resolver: myresolver,
-  }
+  goldmark.WithExtensions(
+    // ...
+    &wiklink.Extender{
+      Resolver: myresolver,
+    },
+  ),
   // ...
 )
 ```
