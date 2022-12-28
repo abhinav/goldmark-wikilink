@@ -32,7 +32,7 @@ var (
 
 // Trigger returns characters that trigger this parser.
 func (p *Parser) Trigger() []byte {
-	return []byte{'['}
+	return []byte{'!', '['}
 }
 
 // Parse parses a wikilink. It supports links in the following form.
@@ -49,9 +49,16 @@ func (p *Parser) Trigger() []byte {
 //
 // This will treat "My page" as the target and "click here" as the label for
 // the link.
+//
+// A wikilink can also be embedded, i.e. starts with a bang (!).
+// A few examples of embedded wikilink:
+//
+//  ![[My page]] (simple)
+//  ![[My page#fragment|click here]]
 func (p *Parser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.Node {
 	line, seg := block.PeekLine()
-	if !bytes.HasPrefix(line, _open) {
+	start := bytes.Index(line, _open)
+	if start > 1 || (start == 1 && line[0] != '!') {
 		return nil
 	}
 
@@ -61,7 +68,13 @@ func (p *Parser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.Node
 	}
 	seg = text.NewSegment(seg.Start+2, seg.Start+stop)
 
-	n := &Node{Target: block.Value(seg)}
+	isEmbed := start == 1
+	if isEmbed {
+		// We add another offset to accomodate the `!`
+		seg = seg.WithStart(seg.Start + 1)
+	}
+
+	n := &Node{Target: block.Value(seg), IsEmbed: isEmbed}
 	if idx := bytes.Index(n.Target, _pipe); idx >= 0 {
 		n.Target = n.Target[:idx]                // [[ ... |
 		seg = seg.WithStart(seg.Start + idx + 1) // | ... ]]
