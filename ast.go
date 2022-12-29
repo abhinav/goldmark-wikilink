@@ -38,7 +38,7 @@ type Node struct {
 
 	// True if it starts with a bang (!).
 	// This indicates that the resource should be embedded (e.g. images)
-	IsEmbed bool
+	Embed bool
 }
 
 var _ ast.Node = (*Node)(nil)

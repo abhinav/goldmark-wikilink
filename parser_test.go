@@ -20,6 +20,7 @@ func TestParser(t *testing.T) {
 		wantTarget   string
 		wantLabel    string
 		wantFragment string
+		wantEmbed    bool
 
 		remainder string // unconsumed portion of tt.give
 	}{
@@ -79,6 +80,30 @@ func TestParser(t *testing.T) {
 			wantLabel:    "bar",
 			wantFragment: "foo",
 		},
+		{
+			desc:       "label with spaces. embedded",
+			give:       "![[foo bar|baz qux]] quux",
+			wantTarget: "foo bar",
+			wantLabel:  "baz qux",
+			remainder:  " quux",
+			wantEmbed:  true,
+		},
+		{
+			desc:         "fragment without target with label. embedded",
+			give:         "![[#foo|bar]]",
+			wantTarget:   "",
+			wantLabel:    "bar",
+			wantFragment: "foo",
+			wantEmbed:    true,
+		},
+		{
+			desc:         "fragment without target with label. embedded",
+			give:         "![[baz#foo|bar]]",
+			wantTarget:   "baz",
+			wantLabel:    "bar",
+			wantFragment: "foo",
+			wantEmbed:    true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -95,6 +120,7 @@ func TestParser(t *testing.T) {
 			if n, ok := got.(*Node); assert.True(t, ok, "expected Node, got %T", got) {
 				assert.Equal(t, tt.wantTarget, string(n.Target), "target mismatch")
 				assert.Equal(t, tt.wantFragment, string(n.Fragment), "fragment mismatch")
+				assert.Equal(t, tt.wantEmbed, n.Embed, "embed mismatch")
 			}
 
 			if assert.Equal(t, 1, got.ChildCount(), "children mismatch") {

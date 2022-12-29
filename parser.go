@@ -24,10 +24,11 @@ type Parser struct {
 var _ parser.InlineParser = (*Parser)(nil)
 
 var (
-	_open  = []byte("[[")
-	_pipe  = []byte{'|'}
-	_hash  = []byte{'#'}
-	_close = []byte("]]")
+	_open      = []byte("[[")
+	_embedOpen = []byte("![[")
+	_pipe      = []byte{'|'}
+	_hash      = []byte{'#'}
+	_close     = []byte("]]")
 )
 
 // Trigger returns characters that trigger this parser.
@@ -57,24 +58,24 @@ func (p *Parser) Trigger() []byte {
 //  ![[My page#fragment|click here]]
 func (p *Parser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.Node {
 	line, seg := block.PeekLine()
-	start := bytes.Index(line, _open)
-	if start > 1 || (start == 1 && line[0] != '!') {
+	stop := bytes.Index(line, _close)
+	if stop < 0 {
+		return nil // must close on the same line
+	}
+
+	var embed bool
+
+	switch {
+	case bytes.HasPrefix(line, _open):
+		seg = text.NewSegment(seg.Start+len(_open), seg.Start+stop)
+	case bytes.HasPrefix(line, _embedOpen):
+		embed = true
+		seg = text.NewSegment(seg.Start+len(_embedOpen), seg.Start+stop)
+	default:
 		return nil
 	}
 
-	stop := bytes.Index(line, _close)
-	if stop < 0 {
-		return nil // must close on the same ine
-	}
-	seg = text.NewSegment(seg.Start+2, seg.Start+stop)
-
-	isEmbed := start == 1
-	if isEmbed {
-		// We add another offset to accomodate the `!`
-		seg = seg.WithStart(seg.Start + 1)
-	}
-
-	n := &Node{Target: block.Value(seg), IsEmbed: isEmbed}
+	n := &Node{Target: block.Value(seg), Embed: embed}
 	if idx := bytes.Index(n.Target, _pipe); idx >= 0 {
 		n.Target = n.Target[:idx]                // [[ ... |
 		seg = seg.WithStart(seg.Start + idx + 1) // | ... ]]
