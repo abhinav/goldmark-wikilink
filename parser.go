@@ -54,8 +54,8 @@ func (p *Parser) Trigger() []byte {
 // A wikilink can also be embedded, i.e. starts with a bang (!).
 // A few examples of embedded wikilink:
 //
-//  ![[My page]] (simple)
-//  ![[My page#fragment|click here]]
+//	![[My page]] (simple)
+//	![[My page#fragment|click here]]
 func (p *Parser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.Node {
 	line, seg := block.PeekLine()
 	stop := bytes.Index(line, _close)
