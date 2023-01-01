@@ -18,39 +18,105 @@ func TestRenderer(t *testing.T) {
 	t.Run("default resolver", func(t *testing.T) {
 		t.Parallel()
 
-		var (
-			r     Renderer
-			buff  bytes.Buffer
-			w     = bufio.NewWriter(&buff)
-			tests = []struct {
-				n            *Node
-				wantEntering string
-				wantExiting  string
-			}{
-				{n: &Node{Target: []byte("foo")}, wantEntering: `<a href="foo.html">`, wantExiting: `</a>`},
-				{n: &Node{Target: []byte("foo.png")}, wantEntering: `<a href="foo.png">`, wantExiting: `</a>`},
-				{n: &Node{Target: []byte("foo.png"), Embed: true}, wantEntering: `<img src="foo.png">`, wantExiting: ``},
-				{n: &Node{Target: []byte("my cat picture 1.jpeg"), Embed: true}, wantEntering: `<img src="my%20cat%20picture%201.jpeg">`, wantExiting: ``},
-				{n: &Node{Target: []byte("foo.pdf")}, wantEntering: `<a href="foo.pdf">`, wantExiting: `</a>`},
-				{n: &Node{Target: []byte("foo.pdf"), Embed: true}, wantEntering: `<a href="foo.pdf">`, wantExiting: `</a>`},
-				{n: &Node{Target: []byte("foo"), Fragment: []byte("frag")}, wantEntering: `<a href="foo.html#frag">`, wantExiting: `</a>`},
-				{n: &Node{Target: []byte("foo"), Fragment: []byte("frag"), Embed: true}, wantEntering: `<a href="foo.html#frag">`, wantExiting: `</a>`},
-			}
-		)
+		tests := []struct {
+			desc         string
+			give         *Node
+			wantEntering string
+			wantExiting  string
+		}{
+			{
+				desc: "page",
+				give: &Node{
+					Target: []byte("foo"),
+				},
+				wantEntering: `<a href="foo.html">`,
+				wantExiting:  `</a>`,
+			},
+			{
+				desc: "image link",
+				give: &Node{
+					Target: []byte("foo.png"),
+				},
+				wantEntering: `<a href="foo.png">`,
+				wantExiting:  `</a>`,
+			},
+			{
+				desc: "image embed",
+				give: &Node{
+					Target: []byte("foo.png"),
+					Embed:  true,
+				},
+				wantEntering: `<img src="foo.png">`,
+				wantExiting:  ``,
+			},
+			{
+				desc: "image embed url escape",
+				give: &Node{
+					Target: []byte("my cat picture 1.jpeg"),
+					Embed:  true,
+				},
+				wantEntering: `<img src="my%20cat%20picture%201.jpeg">`,
+				wantExiting:  ``,
+			},
+			{
+				desc: "pdf link",
+				give: &Node{
+					Target: []byte("foo.pdf"),
+				},
+				wantEntering: `<a href="foo.pdf">`,
+				wantExiting:  `</a>`,
+			},
+			{
+				desc: "pdf embed", // unsupported at this time
+				give: &Node{
+					Target: []byte("foo.pdf"),
+					Embed:  true,
+				},
+				wantEntering: `<a href="foo.pdf">`,
+				wantExiting:  `</a>`,
+			},
+			{
+				desc: "page fragment",
+				give: &Node{
+					Target:   []byte("foo"),
+					Fragment: []byte("frag"),
+				},
+				wantEntering: `<a href="foo.html#frag">`,
+				wantExiting:  `</a>`,
+			},
+			{
+				desc: "page fragment embed", // unsupported at this time
+				give: &Node{
+					Target:   []byte("foo"),
+					Fragment: []byte("frag"),
+					Embed:    true,
+				},
+				wantEntering: `<a href="foo.html#frag">`,
+				wantExiting:  `</a>`,
+			},
+		}
 
 		for _, tt := range tests {
-			_, err := r.Render(w, nil /* source */, tt.n, true /* entering */)
-			require.NoError(t, err, "should not fail")
-			require.NoError(t, w.Flush(), "flush")
+			t.Run(tt.desc, func(t *testing.T) {
+				var (
+					r    Renderer
+					buff bytes.Buffer
+				)
+				w := bufio.NewWriter(&buff)
 
-			assert.Equal(t, tt.wantEntering, buff.String(), "output mismatch")
-			buff.Reset()
-			_, err = r.Render(w, nil /* source */, tt.n, false /* exiting */)
-			require.NoError(t, err, "should not fail")
-			require.NoError(t, w.Flush(), "flush")
+				_, err := r.Render(w, nil /* source */, tt.give, true /* entering */)
+				require.NoError(t, err, "should not fail")
+				require.NoError(t, w.Flush(), "flush")
 
-			assert.Equal(t, tt.wantExiting, buff.String(), "output mismatch")
-			buff.Reset()
+				assert.Equal(t, tt.wantEntering, buff.String(), "output mismatch")
+				buff.Reset()
+
+				_, err = r.Render(w, nil /* source */, tt.give, false /* exiting */)
+				require.NoError(t, err, "should not fail")
+				require.NoError(t, w.Flush(), "flush")
+
+				assert.Equal(t, tt.wantExiting, buff.String(), "output mismatch")
+			})
 		}
 	})
 
