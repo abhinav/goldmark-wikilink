@@ -35,6 +35,10 @@ type Node struct {
 	// For links in the form, [[Foo bar#Baz qux]], this is the portion
 	// after the "#".
 	Fragment []byte
+
+	// True if it starts with a bang (!).
+	// This indicates that the resource should be embedded (e.g. images)
+	Embed bool
 }
 
 var _ ast.Node = (*Node)(nil)
