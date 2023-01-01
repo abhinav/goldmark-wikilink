@@ -114,12 +114,12 @@ func (r *Renderer) exit(w util.BufWriter, n *Node) {
 
 // returns true if the wikilink should be resolved to an image node
 func resolveAsImage(n *Node) bool {
-	return n.Embed && isImage(string(n.Target))
-}
+	if !n.Embed {
+		return false
+	}
 
-func isImage(filename string) bool {
-	ext := filepath.Ext(filename)
-	switch ext {
+	filename := string(n.Target)
+	switch ext := filepath.Ext(filename); ext {
 	// Common image file types taken from
 	// https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
 	case ".apng", ".avif", ".gif", ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp", ".png", ".svg", ".webp":
