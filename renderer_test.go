@@ -19,18 +19,39 @@ func TestRenderer(t *testing.T) {
 		t.Parallel()
 
 		var (
-			r    Renderer
-			buff bytes.Buffer
-			w    = bufio.NewWriter(&buff)
-			n    = &Node{Target: []byte("foo")}
+			r     Renderer
+			buff  bytes.Buffer
+			w     = bufio.NewWriter(&buff)
+			tests = []struct {
+				n            *Node
+				wantEntering string
+				wantExiting  string
+			}{
+				{n: &Node{Target: []byte("foo")}, wantEntering: `<a href="foo.html">`, wantExiting: `</a>`},
+				{n: &Node{Target: []byte("foo.png")}, wantEntering: `<a href="foo.png">`, wantExiting: `</a>`},
+				{n: &Node{Target: []byte("foo.png"), Embed: true}, wantEntering: `<img src="foo.png">`, wantExiting: ``},
+				{n: &Node{Target: []byte("my cat picture 1.jpeg"), Embed: true}, wantEntering: `<img src="my%20cat%20picture%201.jpeg">`, wantExiting: ``},
+				{n: &Node{Target: []byte("foo.pdf")}, wantEntering: `<a href="foo.pdf">`, wantExiting: `</a>`},
+				{n: &Node{Target: []byte("foo.pdf"), Embed: true}, wantEntering: `<a href="foo.pdf">`, wantExiting: `</a>`},
+				{n: &Node{Target: []byte("foo"), Fragment: []byte("frag")}, wantEntering: `<a href="foo.html#frag">`, wantExiting: `</a>`},
+				{n: &Node{Target: []byte("foo"), Fragment: []byte("frag"), Embed: true}, wantEntering: `<a href="foo.html#frag">`, wantExiting: `</a>`},
+			}
 		)
 
-		_, err := r.Render(w, nil /* source */, n, true /* entering */)
-		require.NoError(t, err, "should not fail")
-		require.NoError(t, w.Flush(), "flush")
+		for _, tt := range tests {
+			_, err := r.Render(w, nil /* source */, tt.n, true /* entering */)
+			require.NoError(t, err, "should not fail")
+			require.NoError(t, w.Flush(), "flush")
 
-		assert.Equal(t, `<a href="foo.html">`, buff.String(),
-			"output mismatch")
+			assert.Equal(t, tt.wantEntering, buff.String(), "output mismatch")
+			buff.Reset()
+			_, err = r.Render(w, nil /* source */, tt.n, false /* exiting */)
+			require.NoError(t, err, "should not fail")
+			require.NoError(t, w.Flush(), "flush")
+
+			assert.Equal(t, tt.wantExiting, buff.String(), "output mismatch")
+			buff.Reset()
+		}
 	})
 
 	t.Run("custom resolver", func(t *testing.T) {

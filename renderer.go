@@ -2,6 +2,7 @@ package wikilink
 
 import (
 	"fmt"
+	"path/filepath"
 	"sync"
 
 	"github.com/yuin/goldmark/ast"
@@ -88,7 +89,11 @@ func (r *Renderer) enter(w util.BufWriter, n *Node) error {
 	}
 
 	r.hasDest[n] = struct{}{}
-	w.WriteString(`<a href="`)
+	if resolveAsImage(n) {
+		w.WriteString(`<img src="`)
+	} else {
+		w.WriteString(`<a href="`)
+	}
 	w.Write(util.URLEscape(dest, true /* resolve references */))
 	w.WriteString(`">`)
 	return nil
@@ -100,7 +105,26 @@ func (r *Renderer) exit(w util.BufWriter, n *Node) {
 		return
 	}
 
-	w.WriteString("</a>")
+	if !resolveAsImage(n) {
+		w.WriteString("</a>")
+	}
 	// Avoid memory leaks by cleaning up after exiting the node.
 	delete(r.hasDest, n)
+}
+
+// returns true if the wikilink should be resolved to an image node
+func resolveAsImage(n *Node) bool {
+	return n.Embed && isImage(string(n.Target))
+}
+
+func isImage(filename string) bool {
+	ext := filepath.Ext(filename)
+	switch ext {
+	// Common image file types taken from
+	// https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
+	case ".apng", ".avif", ".gif", ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp", ".png", ".svg", ".webp":
+		return true
+	default:
+		return false
+	}
 }
