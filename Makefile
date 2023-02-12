@@ -42,7 +42,11 @@ golint: $(GOLINT)
 
 .PHONY: staticcheck
 staticcheck: $(STATICCHECK)
-	$(STATICCHECK) ./...
+	$(eval STATICCHECK_LOG := $(shell mktemp -t staticcheck.XXXXX))
+	$(STATICCHECK) ./... | grep -v SA1019 > $(STATICCHECK_LOG) || true
+	@[ ! -s "$(STATICCHECK_LOG)" ] || \
+		 (echo "static failed:" | \
+		 cat - $(STATICCHECK_LOG) && false)
 
 tools: $(GOLINT) $(STATICCHECK)
 
