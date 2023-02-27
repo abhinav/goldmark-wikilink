@@ -5,9 +5,9 @@ GO_FILES = $(shell find . \
 	   -path '*/.*' -prune -o \
 	   '(' -type f -a -name '*.go' ')' -print)
 
-GOLINT = $(GOBIN)/golint
+REVIVE = $(GOBIN)/revive
 STATICCHECK = $(GOBIN)/staticcheck
-TOOLS = $(GOLINT) $(STATICCHECK)
+TOOLS = $(REVIVE) $(STATICCHECK)
 
 .PHONY: all
 all: build lint test
@@ -26,7 +26,7 @@ cover:
 	go tool cover -html=cover.out -o cover.html
 
 .PHONY: lint
-lint: gofmt golint staticcheck
+lint: gofmt revive staticcheck
 
 .PHONY: gofmt
 gofmt:
@@ -36,18 +36,18 @@ gofmt:
 		(echo "gofmt failed. Please reformat the following files:" | \
 		cat - $(FMT_LOG) && false)
 
-.PHONY: golint
-golint: $(GOLINT)
-	$(GOLINT) ./...
+.PHONY: revive
+revive: $(REVIVE)
+	$(REVIVE) -set_exit_status ./...
 
 .PHONY: staticcheck
 staticcheck: $(STATICCHECK)
 	$(STATICCHECK) ./...
 
-tools: $(GOLINT) $(STATICCHECK)
+tools: $(REVIVE) $(STATICCHECK)
 
-$(GOLINT): tools/go.mod
-	cd tools && go install golang.org/x/lint/golint
+$(REVIVE): tools/go.mod
+	cd tools && go install github.com/mgechev/revive
 
 $(STATICCHECK): tools/go.mod
 	cd tools && go install honnef.co/go/tools/cmd/staticcheck
