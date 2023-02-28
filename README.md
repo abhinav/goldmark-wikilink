@@ -12,7 +12,7 @@ and `![[...]]`-style embedded wiki links.
 
 **Demo**:
 A web-based demonstration of the extension is available at
-<https://abhinav.github.io/goldmark-hashtag/demo/>.
+<https://abhinav.github.io/goldmark-wikilink/demo/>.
 
 ## Installation
 
