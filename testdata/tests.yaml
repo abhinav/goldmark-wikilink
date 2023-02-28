@@ -1,0 +1,117 @@
+- desc: word
+  give: |
+    [[Simple]] link.
+  want: |
+    <p><a href="Simple.html">Simple</a> link.</p>
+
+- desc: label
+  give: |
+    Links [[with|label]].
+  want: |
+    <p>Links <a href="with.html">label</a>.</p>
+
+- desc: spaces
+  give: |
+    Links [[can have spaces]].
+  want: |
+    <p>Links <a href="can%20have%20spaces.html">can have spaces</a>.</p>
+
+- desc: label/spaces
+  give: |
+    Labels [[can have|spaces too]].
+  want: |
+    <p>Labels <a href="can%20have.html">spaces too</a>.</p>
+
+- desc: not multiline
+  give: |
+    Links can not [[go across
+    lines]]
+  want: |
+    <p>Links can not [[go across
+    lines]]</p>
+
+- desc: label/not multiline
+  give: |
+    Labels can not [[go across|
+    lines]].
+  want: |
+    <p>Labels can not [[go across|
+    lines]].</p>
+
+- desc: no formatting
+  give: |
+    Formatting in [[links *is* _taken_ ~~verbatim~~]].
+  want: |
+    <p>Formatting in <a href="links%20*is*%20_taken_%20~~verbatim~~.html">links *is* _taken_ ~~verbatim~~</a>.</p>
+
+- desc: target not empty
+  give: |
+    Empty links are not allowed [[]].
+  want: |
+    <p>Empty links are not allowed [[]].</p>
+
+- desc: label/target not empty
+  give: |
+    Empty links are not allowed even with labels [[|Foo]].
+  want: |
+    <p>Empty links are not allowed even with labels [[|Foo]].</p>
+
+- desc: label not empty
+  give: |
+    Empty labels are not allowed [[Foo|]].
+  want: |
+    <p>Empty labels are not allowed [[Foo|]].</p>
+
+- desc: regular link
+  give: |
+    Does not mess up [regular links](dest.html).
+  want: |
+    <p>Does not mess up <a href="dest.html">regular links</a>.</p>
+
+- desc: fragment
+  give: |
+    Supports [[Fragments#In Links]].
+  want: |
+    <p>Supports <a href="Fragments.html#In%20Links">Fragments#In Links</a>.</p>
+
+- desc: label/fragment
+  give: |
+    Links [[with fragments#can have|labels]].
+  want: |
+    <p>Links <a href="with%20fragments.html#can%20have">labels</a>.</p>
+
+- desc: fragment only
+  give: |
+    [[#Relative]] links.
+  want: |
+    <p><a href="#Relative">#Relative</a> links.</p>
+
+- desc: label/fragment only
+  give: |
+    Relative [[#Links|with labels]].
+  want: |
+    <p>Relative <a href="#Links">with labels</a>.</p>
+
+- desc: unresolved
+  give: |
+    Page that [[Does Not Exist]].
+  want: |
+    <p>Page that Does Not Exist.</p>
+
+- desc: label/unresolved
+  give: |
+    Page that [[Does Not Exist|has a label]].
+  want: |
+    <p>Page that has a label.</p>
+
+- desc: image
+  give: |
+    Image: ![[hello.png]].
+  want: |
+    <p>Image: <img src="hello.png">.</p>
+
+- desc: label/image
+  give: |
+    Image: ![[hello.png|alt text]].
+  want: |
+    <p>Image: <img src="hello.png" alt="alt text">.</p>
