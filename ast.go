@@ -7,11 +7,11 @@ import (
 // Kind is the kind of the wikilink AST node.
 var Kind = ast.NewNodeKind("WikiLink")
 
-// Node is a Wikilink AST node. Wikilinks have two components: the target and
-// the label.
+// Node is a Wikilink AST node.
+// Wikilinks have two components: the target and the label.
 //
-// The target is the page to which this link points, and the label is the text
-// that displays for this link.
+// The target is the page to which this link points,
+// and the label is the text that displays for this link.
 //
 // For links in the following form, the label and the target are the same.
 //
@@ -36,8 +36,11 @@ type Node struct {
 	// after the "#".
 	Fragment []byte
 
-	// True if it starts with a bang (!).
-	// This indicates that the resource should be embedded (e.g. images)
+	// Whether this link starts with a bang (!).
+	//
+	//	![[foo.png]]
+	//
+	// This indicates that the resource should be embedded (e.g. images).
 	Embed bool
 }
 
