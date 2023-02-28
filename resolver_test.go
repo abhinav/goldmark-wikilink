@@ -35,6 +35,14 @@ func TestDefaultResolver(t *testing.T) {
 			want:   "foo/bar.html",
 		},
 		{
+			target: "foo bar.pdf",
+			want:   "foo bar.pdf",
+		},
+		{
+			target: "foo/bar.png",
+			want:   "foo/bar.png",
+		},
+		{
 			target:   "foo",
 			fragment: "bar",
 			want:     "foo.html#bar",

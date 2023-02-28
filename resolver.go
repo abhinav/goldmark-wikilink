@@ -1,5 +1,7 @@
 package wikilink
 
+import "path/filepath"
+
 // DefaultResolver is a minimal wiklink resolver that resolves to HTML pages
 // relative to the source page.
 //
@@ -34,7 +36,9 @@ func (defaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
 	var i int
 	if len(n.Target) > 0 {
 		i += copy(dest, n.Target)
-		i += copy(dest[i:], _html)
+		if filepath.Ext(string(n.Target)) == "" {
+			i += copy(dest[i:], _html)
+		}
 	}
 	if len(n.Fragment) > 0 {
 		i += copy(dest[i:], _hash)

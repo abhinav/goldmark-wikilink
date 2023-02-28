@@ -1,7 +1,9 @@
 package wikilink
 
 import (
+	"bytes"
 	"fmt"
+	"path/filepath"
 	"sync"
 
 	"github.com/yuin/goldmark/ast"
@@ -59,39 +61,55 @@ func (r *Renderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
 //
 // goldmark will call this method if this renderer was registered with it
 // using the WithNodeRenderers option.
-func (r *Renderer) Render(w util.BufWriter, _ []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
+func (r *Renderer) Render(w util.BufWriter, src []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
 	r.init()
 
 	n, ok := node.(*Node)
 	if !ok {
-		return ast.WalkStop, fmt.Errorf("unexpected node %T, expected *goldmarkwikilink.Node", node)
+		return ast.WalkStop, fmt.Errorf("unexpected node %T, expected *wikilink.Node", node)
 	}
 
 	if entering {
-		if err := r.enter(w, n); err != nil {
-			return ast.WalkStop, err
-		}
-	} else {
-		r.exit(w, n)
+		return r.enter(w, n, src)
 	}
 
+	r.exit(w, n)
 	return ast.WalkContinue, nil
 }
 
-func (r *Renderer) enter(w util.BufWriter, n *Node) error {
+func (r *Renderer) enter(w util.BufWriter, n *Node, src []byte) (ast.WalkStatus, error) {
 	dest, err := r.Resolver.ResolveWikilink(n)
 	if err != nil {
-		return fmt.Errorf("resolve %q: %w", n.Target, err)
+		return ast.WalkStop, fmt.Errorf("resolve %q: %w", n.Target, err)
 	}
 	if len(dest) == 0 {
-		return nil
+		return ast.WalkContinue, nil
 	}
 
 	r.hasDest[n] = struct{}{}
-	w.WriteString(`<a href="`)
+	img := resolveAsImage(n)
+	if !img {
+		w.WriteString(`<a href="`)
+		w.Write(util.URLEscape(dest, true /* resolve references */))
+		w.WriteString(`">`)
+		return ast.WalkContinue, nil
+	}
+
+	w.WriteString(`<img src="`)
 	w.Write(util.URLEscape(dest, true /* resolve references */))
+	// The label portion of the link becomes the alt text
+	// only if it isn't the same as the target.
+	// This way, [[foo.jpg]] does not become alt="foo.jpg",
+	// but [[foo.jpg|bar]] does become alt="bar".
+	if n.ChildCount() == 1 {
+		label := n.FirstChild().Text(src)
+		if !bytes.Equal(label, n.Target) {
+			w.WriteString(`" alt="`)
+			w.Write(util.EscapeHTML(label))
+		}
+	}
 	w.WriteString(`">`)
-	return nil
+	return ast.WalkSkipChildren, nil
 }
 
 func (r *Renderer) exit(w util.BufWriter, n *Node) {
@@ -100,7 +118,26 @@ func (r *Renderer) exit(w util.BufWriter, n *Node) {
 		return
 	}
 
-	w.WriteString("</a>")
+	if !resolveAsImage(n) {
+		w.WriteString("</a>")
+	}
 	// Avoid memory leaks by cleaning up after exiting the node.
 	delete(r.hasDest, n)
+}
+
+// returns true if the wikilink should be resolved to an image node
+func resolveAsImage(n *Node) bool {
+	if !n.Embed {
+		return false
+	}
+
+	filename := string(n.Target)
+	switch ext := filepath.Ext(filename); ext {
+	// Common image file types taken from
+	// https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
+	case ".apng", ".avif", ".gif", ".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp", ".png", ".svg", ".webp":
+		return true
+	default:
+		return false
+	}
 }

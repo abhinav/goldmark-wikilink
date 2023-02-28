@@ -104,3 +104,15 @@ Page that [[Does Not Exist|has a label]].
 //- - - - - - - - -//
 <p>Page that has a label.</p>
 //= = = = = = = = = = = = = = = = = = = = = = = =//
+18
+//- - - - - - - - -//
+Image: ![[hello.png]].
+//- - - - - - - - -//
+<p>Image: <img src="hello.png">.</p>
+//= = = = = = = = = = = = = = = = = = = = = = = =//
+19
+//- - - - - - - - -//
+Image: ![[hello.png|alt text]].
+//- - - - - - - - -//
+<p>Image: <img src="hello.png" alt="alt text">.</p>
+//= = = = = = = = = = = = = = = = = = = = = = = =//
