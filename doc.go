@@ -1,3 +1,3 @@
-// Package wikilink provides support for parsing [[...]]-style
-// wiki links for the goldmark Markdown parser.
+// Package wikilink provides support for parsing [[...]]-style and ![[...]]-style
+// wiki links to the goldmark Markdown parser.
 package wikilink

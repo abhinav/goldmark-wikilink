@@ -17,9 +17,8 @@ import (
 //	goldmarkParser.AddOptions(parser.WithInlineParsers(wikilinkParser))
 //
 // Note that the priority for the wikilink parser must 199 or lower to take
-// precednce over the plain Markdown link parser which has a priority of 200.
-type Parser struct {
-}
+// precedence over the plain Markdown link parser which has a priority of 200.
+type Parser struct{}
 
 var _ parser.InlineParser = (*Parser)(nil)
 
@@ -36,26 +35,21 @@ func (p *Parser) Trigger() []byte {
 	return []byte{'!', '['}
 }
 
-// Parse parses a wikilink. It supports links in the following form.
+// Parse parses a wikilink in one of the following forms:
 //
-//	[[My page]]
+//	[[...]]    (simple)
+//	![[...]]   (embedded)
 //
-// This will use "My page" as both, the target for the link as well as the
-// plain text label for it.
+// Both, simple and embedded wikilinks support the following syntax:
 //
-// Optionally, links can specify a different label by adding a "|" after the
-// target.
+//	[[target]]
+//	[[target|label]]
 //
-//	[[My page|click here]]
+// If the label is omitted, the target is used as the label.
 //
-// This will treat "My page" as the target and "click here" as the label for
-// the link.
+// The target may optionally contain a fragment identifier:
 //
-// A wikilink can also be embedded, i.e. starts with a bang (!).
-// A few examples of embedded wikilink:
-//
-//	![[My page]] (simple)
-//	![[My page#fragment|click here]]
+//	[[target#fragment]]
 func (p *Parser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.Node {
 	line, seg := block.PeekLine()
 	stop := bytes.Index(line, _close)

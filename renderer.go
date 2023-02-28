@@ -57,10 +57,14 @@ func (r *Renderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
 	reg.Register(Kind, r.Render)
 }
 
-// Render renders the provided Node. It must be a Wikilink node.
+// Render renders the provided Node. It must be a Wikilink [Node].
 //
 // goldmark will call this method if this renderer was registered with it
 // using the WithNodeRenderers option.
+//
+// All nodes will be rendered as links (with <a> tags),
+// except for embed links (![[..]]) that refer to images.
+// Those will be rendered as images (with <img> tags).
 func (r *Renderer) Render(w util.BufWriter, src []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
 	r.init()
 

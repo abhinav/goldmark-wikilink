@@ -2,14 +2,19 @@ package wikilink
 
 import "path/filepath"
 
-// DefaultResolver is a minimal wiklink resolver that resolves to HTML pages
+// DefaultResolver is a minimal wiklink resolver that resolves wikilinks
 // relative to the source page.
+//
+// It adds ".html" to the end of the target
+// if the target does not have an extension.
 //
 // For example,
 //
 //	[[Foo]]      // => "Foo.html"
 //	[[Foo bar]]  // => "Foo bar.html"
 //	[[foo/Bar]]  // => "foo/Bar.html"
+//	[[foo.pdf]]  // => "foo.pdf"
+//	[[foo.png]]  // => "foo.png"
 var DefaultResolver Resolver = defaultResolver{}
 
 // Resolver resolves pages referenced by wikilinks to their destinations.
