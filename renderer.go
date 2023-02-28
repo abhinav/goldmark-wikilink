@@ -38,12 +38,11 @@ type Renderer struct {
 	// hasDest records whether a node had a destination when we resolved
 	// it. This is needed to decide whether a closing </a> must be added
 	// when exiting a Node render.
-	hasDest map[*Node]struct{}
+	hasDest sync.Map // *Node => struct{}
 }
 
 func (r *Renderer) init() {
 	r.once.Do(func() {
-		r.hasDest = make(map[*Node]struct{})
 		if r.Resolver == nil {
 			r.Resolver = DefaultResolver
 		}
@@ -90,9 +89,9 @@ func (r *Renderer) enter(w util.BufWriter, n *Node, src []byte) (ast.WalkStatus,
 		return ast.WalkContinue, nil
 	}
 
-	r.hasDest[n] = struct{}{}
 	img := resolveAsImage(n)
 	if !img {
+		r.hasDest.Store(n, struct{}{})
 		w.WriteString(`<a href="`)
 		w.Write(util.URLEscape(dest, true /* resolve references */))
 		w.WriteString(`">`)
@@ -117,16 +116,9 @@ func (r *Renderer) enter(w util.BufWriter, n *Node, src []byte) (ast.WalkStatus,
 }
 
 func (r *Renderer) exit(w util.BufWriter, n *Node) {
-	_, ok := r.hasDest[n]
-	if !ok {
-		return
-	}
-
-	if !resolveAsImage(n) {
+	if _, ok := r.hasDest.LoadAndDelete(n); ok {
 		w.WriteString("</a>")
 	}
-	// Avoid memory leaks by cleaning up after exiting the node.
-	delete(r.hasDest, n)
 }
 
 // returns true if the wikilink should be resolved to an image node
