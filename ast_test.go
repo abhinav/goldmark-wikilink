@@ -10,6 +10,7 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
+//nolint:paralleltest // changes os.Stdout
 func TestNodeDump(t *testing.T) {
 	src := []byte("[[My page]]")
 	n := &Node{Target: src[2 : len(src)-2]}
