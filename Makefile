@@ -1,53 +1,44 @@
-# "go install"-ed binaries will be placed here during development.
-export GOBIN ?= $(shell pwd)/bin
+SHELL = /bin/bash
 
-GO_FILES = $(shell find . \
-	   -path '*/.*' -prune -o \
-	   '(' -type f -a -name '*.go' ')' -print)
+PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-REVIVE = $(GOBIN)/revive
-STATICCHECK = $(GOBIN)/staticcheck
-TOOLS = $(REVIVE) $(STATICCHECK)
+# Setting GOBIN and PATH ensures two things:
+# - All 'go install' commands we run
+#   only affect the current directory.
+# - All installed tools are available on PATH
+#   for commands like go generate.
+export GOBIN = $(PROJECT_ROOT)/bin
+export PATH := $(GOBIN):$(PATH)
+
+TEST_FLAGS ?= -v -race
 
 .PHONY: all
-all: build lint test
+all: lint test
 
-.PHONY: build
-build:
-	go build ./...
+.PHONY: lint
+lint: golangci-lint tidy-lint
+
+.PHONY: golangci-lint
+golangci-lint:
+	@echo "[lint] Checking golangci-lint"
+	@golangci-lint run
+
+.PHONY: tidy
+tidy:
+	go mod tidy
+
+.PHONY: tidy-lint
+tidy-lint:
+	@echo "[lint] Checking go mod tidy"
+	@go mod tidy && \
+		git diff --exit-code -- go.mod go.sum || \
+		(echo "[$(mod)] go mod tidy changed files" && false)
 
 .PHONY: test
 test:
-	go test -v -race ./...
+	go test $(TEST_FLAGS) ./...
 
 .PHONY: cover
 cover:
-	go test -race -coverprofile=cover.out -coverpkg=./... ./...
+	go test $(TEST_FLAGS) -coverprofile=cover.out -coverpkg=./... ./...
 	go tool cover -html=cover.out -o cover.html
-
-.PHONY: lint
-lint: gofmt revive staticcheck
-
-.PHONY: gofmt
-gofmt:
-	$(eval FMT_LOG := $(shell mktemp -t gofmt.XXXXX))
-	@gofmt -e -s -l $(GO_FILES) > $(FMT_LOG) || true
-	@[ ! -s "$(FMT_LOG)" ] || \
-		(echo "gofmt failed. Please reformat the following files:" | \
-		cat - $(FMT_LOG) && false)
-
-.PHONY: revive
-revive: $(REVIVE)
-	$(REVIVE) -set_exit_status ./...
-
-.PHONY: staticcheck
-staticcheck: $(STATICCHECK)
-	$(STATICCHECK) ./...
-
-tools: $(REVIVE) $(STATICCHECK)
-
-$(REVIVE): tools/go.mod
-	cd tools && go install github.com/mgechev/revive
-
-$(STATICCHECK): tools/go.mod
-	cd tools && go install honnef.co/go/tools/cmd/staticcheck
