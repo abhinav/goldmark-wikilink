@@ -28,7 +28,7 @@ To use goldmark-wikilink, import the `wikilink` package.
 import "go.abhg.dev/goldmark/wikilink"
 ```
 
-Then include the `wiklink.Extender` in the list of extensions
+Then include the `wikilink.Extender` in the list of extensions
 that you build your [`goldmark.Markdown`] with.
 
   [`goldmark.Markdown`]: https://pkg.go.dev/github.com/yuin/goldmark#Markdown
@@ -36,7 +36,7 @@ that you build your [`goldmark.Markdown`] with.
 ```go
 goldmark.New(
   goldmark.WithExtensions(
-    &wiklink.Extender{},
+    &wikilink.Extender{},
   ),
   // ...
 )
@@ -61,7 +61,7 @@ to your `wikilink.Extender` when you install it.
 goldmark.New(
   goldmark.WithExtensions(
     // ...
-    &wiklink.Extender{
+    &wikilink.Extender{
       Resolver: myresolver,
     },
   ),

@@ -2,7 +2,7 @@ package wikilink
 
 import "path/filepath"
 
-// DefaultResolver is a minimal wiklink resolver that resolves wikilinks
+// DefaultResolver is a minimal wikilink resolver that resolves wikilinks
 // relative to the source page.
 //
 // It adds ".html" to the end of the target
