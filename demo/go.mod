@@ -6,5 +6,5 @@ replace go.abhg.dev/goldmark/wikilink => ../
 
 require (
 	github.com/yuin/goldmark v1.7.4
-	go.abhg.dev/goldmark/wikilink v0.4.0
+	go.abhg.dev/goldmark/wikilink v0.5.0
 )
