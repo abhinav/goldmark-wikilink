@@ -1,3 +1,0 @@
-kind: Changed
-body: Raise minimum version of goldmark to v1.7.8. This requires handling Node.Text deprecation in your code.
-time: 2025-02-02T11:30:00.227585-08:00
