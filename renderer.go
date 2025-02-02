@@ -3,6 +3,7 @@ package wikilink
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"path/filepath"
 	"sync"
 
@@ -105,7 +106,7 @@ func (r *Renderer) enter(w util.BufWriter, n *Node, src []byte) (ast.WalkStatus,
 	// This way, [[foo.jpg]] does not become alt="foo.jpg",
 	// but [[foo.jpg|bar]] does become alt="bar".
 	if n.ChildCount() == 1 {
-		label := n.FirstChild().Text(src)
+		label := nodeText(src, n.FirstChild())
 		if !bytes.Equal(label, n.Target) {
 			_, _ = w.WriteString(`" alt="`)
 			_, _ = w.Write(util.EscapeHTML(label))
@@ -135,5 +136,24 @@ func resolveAsImage(n *Node) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func nodeText(src []byte, n ast.Node) []byte {
+	var buf bytes.Buffer
+	writeNodeText(src, &buf, n)
+	return buf.Bytes()
+}
+
+func writeNodeText(src []byte, dst io.Writer, n ast.Node) {
+	switch n := n.(type) {
+	case *ast.Text:
+		_, _ = dst.Write(n.Segment.Value(src))
+	case *ast.String:
+		_, _ = dst.Write(n.Value)
+	default:
+		for c := n.FirstChild(); c != nil; c = c.NextSibling() {
+			writeNodeText(src, dst, c)
+		}
 	}
 }
