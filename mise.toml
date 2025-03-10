@@ -2,7 +2,7 @@
 "ubi:abhinav/doc2go" = "latest"
 "aqua:golangci/golangci-lint" = "latest"
 "ubi:miniscruff/changie" = "latest"
-go = "1.24.0"
+go = "1.24.1"
 
 [tasks.build]
 run = "go build ./..."
