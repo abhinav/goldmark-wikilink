@@ -2,7 +2,7 @@ module go.abhg.dev/goldmark/wikilink/demo
 
 go 1.22
 
-toolchain go1.25.5
+toolchain go1.25.6
 
 replace go.abhg.dev/goldmark/wikilink => ../
 
