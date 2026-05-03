@@ -31,8 +31,12 @@ func TestNodeDump(t *testing.T) {
 
 	want := strings.Join([]string{
 		"WikiLink {",
+		"    Pos: -1",
 		"    Target: My page",
-		`    Text: "My page"`,
+		"    Text {",
+		"        Pos: 2",
+		`        Value: "My page"`,
+		"    }",
 		"}",
 		"",
 	}, "\n")

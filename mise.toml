@@ -1,7 +1,7 @@
 [tools]
-"ubi:abhinav/doc2go" = "latest"
+"github:abhinav/doc2go" = "latest"
 "aqua:golangci/golangci-lint" = "latest"
-"ubi:miniscruff/changie" = "latest"
+"github:miniscruff/changie" = "latest"
 go = "latest"
 
 [tasks.build]
