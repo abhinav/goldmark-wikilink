@@ -2,7 +2,7 @@ module go.abhg.dev/goldmark/wikilink
 
 go 1.22
 
-toolchain go1.26.2
+toolchain go1.26.3
 
 require (
 	github.com/stretchr/testify v1.11.1
