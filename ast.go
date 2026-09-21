@@ -1,7 +1,7 @@
 package wikilink
 
 import (
-	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/v2/ast"
 )
 
 // Kind is the kind of the wikilink AST node.

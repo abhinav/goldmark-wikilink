@@ -1,12 +1,12 @@
 module go.abhg.dev/goldmark/wikilink
 
-go 1.22
+go 1.25
 
 toolchain go1.26.3
 
 require (
 	github.com/stretchr/testify v1.11.1
-	github.com/yuin/goldmark v1.8.2
+	github.com/yuin/goldmark/v2 v2.1.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
