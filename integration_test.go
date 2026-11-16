@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/v2"
 	"go.abhg.dev/goldmark/wikilink"
 	"gopkg.in/yaml.v3"
 )
